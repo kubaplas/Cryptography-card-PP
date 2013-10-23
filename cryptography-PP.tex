@@ -103,16 +103,19 @@
 
 
 \section{Security Problem Definition}
+
+In this chapter, we will present the security problems, which emerge in process of designing, implementing and using the Card-Terminal Authentication Protocol. We describe the threats, organizational policies and assumptions for the TOE addressed in this paper.
+
 \subsection{Assets}
-Place for assets.
 \begin{table}[!ht]
-    \begin{tabular}{|l|l|l|}
+	\begin{tabular}{| p{3cm} | p{7cm} | p{3cm} |}
     \hline
 			Asset name & Comment & Protection Goal \\ \hline
-			Card & ~ & ~ \\ \hline
-			Terminal & ~ & ~ \\ \hline
-			~ & ~ & ~ \\ \hline
-			~ & ~ & ~ \\ \hline
+			Card & To authenticate in the system, user will use a smartcard, which he will receive from system
+			administrator. Smartcards will use Mifare Classic standard, which provides basic operations and simple counter. & integrity \\ \hline
+			Terminal & Device provided by trusted third party. It will cooperate with Mifare Classic smartcards. The terminal will authenticate user if correct smartcard is provided. & integrity \\ \hline
+			Passwords & Passwords allows to create a secure long-term authorization between the card and terminal. Passwords are one-term only. & confidentiality and integrity \\ \hline
+			Communication Data  & All data that is used in traffic between card and terminal (password, nonces, etc.) & integrity \\ \hline
     \end{tabular}
 \end{table}
 
@@ -122,7 +125,14 @@ and rest of actors
 
 \subsection{Threats}
 
-To chyba wypelnimy razem, trzeba wymienic wektory atakow.
+\begin{itemize}
+	\item Relay Attack
+	\item Replay Attack
+	\item Card cloning
+	\item Key leakage
+	\item Compromisation of algorithm
+	
+\end{itemize}
 \subsection{Assumptions}
 \subsection{Organization Security Policies}
 
