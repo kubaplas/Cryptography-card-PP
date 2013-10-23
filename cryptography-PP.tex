@@ -1,0 +1,119 @@
+\documentclass[10pt,titlepage]{article}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage[figuresright]{rotating}
+\usepackage[cp1250]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{pslatex}
+\usepackage{ulem}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{color}
+\usepackage[left=3cm,top=3cm,right=3cm]{geometry} 
+\usepackage{bchart}
+\usepackage{datapie}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\definecolor{szary}{gray}{0.6}% jasnoszary
+
+\setlength{\textwidth}{400pt}
+\lstset{numbers=left,
+			numberstyle=\tiny, 
+			basicstyle=\scriptsize\ttfamily, 
+			breaklines=true, 
+			captionpos=b, 
+			tabsize=2}
+
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\TAB}{\hspace{0.50cm}}
+\newcommand{\IFF}{\leftrightarrow}
+\newcommand{\IMP}{\rightarrow}
+\newcommand{\slice}[4]{
+  \pgfmathparse{0.5*#1+0.5*#2}
+  \let\midangle\pgfmathresult
+
+  % slice
+  \draw[thick,fill=black!10] (0,0) -- (#1:1) arc (#1:#2:1) -- cycle;
+
+  % outer label
+  \node[label=\midangle:#4] at (\midangle:1) {};
+
+  % inner label
+  \pgfmathparse{min((#2-#1-10)/110*(-0.3),0)}
+  \let\temp\pgfmathresult
+  \pgfmathparse{max(\temp,-0.5) + 0.8}
+  \let\innerpos\pgfmathresult
+  \node at (\midangle:\innerpos) {#3};
+}
+\makeindex
+
+
+
+
+
+
+\begin{document}
+
+\pagestyle{empty}
+
+\begin{titlepage}
+\vspace*{\fill}
+\begin{center}
+\begin{picture}(300,510)
+  \put( 10,520){\makebox(0,0)[l]{\large \bf \textsc{Faculty of Fundamental Problems of Technology}}}
+  \put( 10,500){\makebox(0,0)[l]{\large \bf \textsc{Wroclaw University of Technology}}}
+  \put( 20,380){\makebox(0,0)[l]{\Huge  \bf \textsc{Card - Terminal}}}
+  \put( 20,340){\makebox(0,0)[l]{\Huge  \bf \textsc{Authorization Protocol}}}	
+	\put( 20,300){\makebox(0,0)[l]{\Huge  \bf \textsc{Protection Profile}}}
+  \put(100,240){\makebox(0,0)[l]{\large     \textsc{Andrzej Rybczak}}}
+  \put(100,220){\makebox(0,0)[l]{\large     \textsc{Jakub Plaskonka}}}
+  \put(100,200){\makebox(0,0)[l]{\large     \textsc{Bartlomiej Paciorek}}}
+  \put(100,180){\makebox(0,0)[l]{\large     \textsc{Mateusz Platek}}}
+
+
+  \put(100,-80){\makebox(0,0)[bl]{\large \bf \textsc{Wroclaw 2013}}}
+\end{picture}
+\end{center}
+\vspace*{\fill}
+\end{titlepage}
+
+\tableofcontents
+
+\pagestyle{headings}
+\newpage
+\section{Protection Profile Introduction }
+
+
+\section{Security Problem Definition}
+\subsection{Assets}
+\subsection{Threats}
+\subsection{Assumptions}
+\subsection{Organization Security Policies}
+
+\section{Security Objectives}
+\section{Security Requirements}
+\section{Conformance Claims}
+
+\bibliographystyle{plain}
+
+\bibliography{bibliography}
+
+\end{document}
