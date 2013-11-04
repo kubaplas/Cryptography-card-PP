@@ -27,8 +27,10 @@
 \usepackage{ifthen}
 \usepackage{tikz}
 \usepackage{hyperref}
+ \usepackage{array,multirow}
+ \usepackage{xcolor,colortbl}
 
-\definecolor{szary}{gray}{0.6}% jasnoszary
+\definecolor{light-gray}{gray}{0.95}
 
 \setlength{\textwidth}{400pt}
 \lstset{numbers=left,
@@ -109,39 +111,126 @@ In this chapter, we will present the security problems, which emerge in process 
 \subsection{Assets}
 \begin{table}[!ht]
 	\begin{tabular}{| p{3cm} | p{7cm} | p{3cm} |}
-    \hline
+\hline
 			Asset name & Comment & Protection Goal \\ \hline
-			Card & To authenticate in the system, user will use a smartcard, which he will receive from system
-			administrator. Smartcards will use Mifare Classic standard, which provides basic operations and simple counter. & integrity \\ \hline
-			Terminal & Device provided by trusted third party. It will cooperate with Mifare Classic smartcards. The terminal will authenticate user if correct smartcard is provided. & integrity \\ \hline
-			Passwords & Passwords allows to create a secure long-term authorization between the card and terminal. Passwords are one-term only. & confidentiality and integrity \\ \hline
-			Communication Data  & All data that is used in traffic between card and terminal (password, nonces, etc.) & integrity \\ \hline
-    \end{tabular}
+			Passwords & Passwords allow to create a secure long-term authorization between the card and terminal. Passwords are one-term only. & confidentiality and integrity \\ \hline
+			Communication Data & All data that is used in traffic between card and terminal (password, nonces, etc.) & integrity \\ \hline
+\end{tabular}
 \end{table}
+\begin{itemize}
+\item \textbf{End-User} - The legitimate user of the system.
 
+\item \textbf{Terminal} - A device that authenitcates the End-User and gives him access to the system.
 
+\item \textbf{RFID Card} - A smartcard which is able to communicate with the terminal. Holds the keys and enables End-User to authenticate.
 
-and rest of actors
+\item \textbf{Attacker} - Any entity who tries to break system security and gain unauthorized access.
+
+\item \textbf{RFID Card Authenticator} - An Entity (e.g. System Administrator, Terminal Owner) who issues RFID Cards for End Users.
+
+\item \textbf{Any human} - Any entity who has physical access to the system elements (e.g. card, terminal).
+\end{itemize}
 
 \subsection{Threats}
 
 \begin{itemize}
-	\item Relay Attack
-	\item Replay Attack
-	\item Card cloning
-	\item Key leakage
-	\item Compromisation of algorithm
-	
+\item \textbf{T.Relay-Attack} \\
+Relay Attack is based on signal transfer between card and reader on further distance than it is usually needed.
+As the example, attacker's associate who is standing next to the victim can transfer all communication via e.g. WiFi to attacker who will be able to gain access.
+
+\item \textbf{T.Replay-Attack } \\
+Attacker eavedrops the communication between card and reader and stores it.
+After that, attacker repeats all information which has been previously sent by the card to the reader and gains access.
+
+\item \textbf{T.Key-Leakage} \\
+An adversary can obtain cryptographic keys used in protocol. Keys can leak from hardware manufacturer, software engineers, could be obtained by card cloning or by using hardware backward engineering of card or terminal. The wireless communication between card and terminal could be possible source of the key-leakage.
+
 \end{itemize}
 \subsection{Assumptions}
-\subsection{Organization Security Policies}
+
+\begin{itemize}
+
+\item \textbf{A.End-User} (Trustworthy End-User) \\
+The End-User of the system is assumed to be trustworthy and follow the Security Policy.
+
+\item \textbf{A.Terminal} (Secure terminal) \\
+The terminal is assumed to be resistant to backward-engineering and theft. Any attempt of the latter should result in invalidation of information stored inside it.
+
+\item \textbf{A.Card }(Low range communication card) \\
+Range of radio antenna built-in into card is assumed to be low (a few centimeters).
+
+\item \textbf{A.System-Administrators} (Trustworthy system administrators) \\
+The system administrators are assumed to be trustworthy and follow the Security Policy.
+
+\item \textbf{A.Passwords} (One-time passwords) \\ The passwords generated in protocol should be one-term only.
+\end{itemize}
+\subsection{Organizational Security Policies}
+
+
+\begin{itemize}
+	\item \textbf{P.ValidityCheck} \\ TOE shall verify the validity of a card and its state before opening door to secure location.
+\end{itemize}
 
 \section{Security Objectives}
-\subsection{Security Objectives for the TOE}
-\subsection{Security Objectives for the Operational Enviroment}
 
+In this chapter we will provide security objectives, which will be met by the TOE.
+
+\subsection{Security Objectives for the TOE}
+\begin{itemize}
+\item \textbf{OT.Card Uniqueness} (Fraud Detection) \\ The TOE shall provide information to the System Administrators if card with trusted UID will not pass authentication.
+\item \textbf{OT.Transmission Time} \\The TOE is planned to calculate communication delays. Reader calculates cards response time.
+\item \textbf{OT.Transmission Uniqueness} \\ In the TOE every transmission between card and reader is unique.
+\end{itemize}
+
+
+\subsection{Security Objectives for the Operational Environment}
+\begin{itemize}
+
+\item \textbf{OE.End-User} (Trustworthy End-User) \\
+The End-User of the system shall be trustworthy and follow the Security Policy. Additionally, any problems with interfacing with the system (such as terminal denying access to secure location even though a valid card is used) should be immediately reported to the System Administrator.
+
+\item \textbf{OE.Terminal} (Secure terminal) \\
+The terminal shall be resistant to backward-engineering and theft. Any attempt of the latter shall result in terminal unconditionally blocking any further attempts of gaining access to secure location, so the incident is acknowledged by system administrators as soon as possible.
+
+\item \textbf{OE.Card} (Secure and unique card) \\
+The content of the card shall be inaccessible without cryptographic authorisation.\\
+Each card will receive a counter or unique hash, which value will be generated after each authentication. The terminal shall distinguish two cards with same UID and different generated values.
+
+\item \textbf{OE.System-Administrators} (Trustworthy system administrators) \\
+The system administrators shall be bound by the legal contract to not publish technical details about the system and follow the Security Policy.
+
+\item \textbf{OE.Protocol} (Secure protocol) \\
+The protocol should be built using only well documented cryptographic elements that are proven to be safe.
+\end{itemize}
+
+\subsection{Tabelka}
+
+ \begin{table}[!ht]
+ \centering
+ \begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+ \hline
+& \multicolumn{1}{c|}{\rotatebox{90}{OT.Card Uniqueness }}  & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Time  }} & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Uniqueness  }} 
+& \multicolumn{1}{c|}{\rotatebox{90}{OE.End-User  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.End-User  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.Terminal  }} &  \multicolumn{1}{c|}{\rotatebox{90}{OE.Card  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.System-Administrators  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.Protocol  }}\\
+ \hline
+T.Relay-Attack &&&&&&&&&\\ \hline
+ T.Replay-Attack &&&&&&&&&\\ \hline
+ T.Key-Leakage &&&&&&&&&\\ \hline
+  P.ValidityCheck &&&&&&&&&\\ \hline
+ A.End-User & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&&&&\\ \hline
+ A.Terminal & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&&&&\\ \hline
+ A.Card & \cellcolor{gray} & \cellcolor{gray} &\cellcolor{gray}&&&&&&\\ \hline
+ A.System-Administrators & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&&&&\\ \hline
+ A.Passwords &\cellcolor{gray}&\cellcolor{gray} & \cellcolor{gray} &&&&&&\\
+
+ \hline
+ \end{tabular}
+ \end{table}
+ 
 \section{Security Requirements}
 \section{Conformance Claims}
+
+
+
 
 \bibliographystyle{plain}
 
