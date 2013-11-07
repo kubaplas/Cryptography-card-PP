@@ -115,6 +115,9 @@ In this chapter, we will present the security problems, which emerge in process 
 			Asset name & Comment & Protection Goal \\ \hline
 			Passwords & Passwords allow to create a secure long-term authorization between the card and terminal. Passwords are one-term only. & confidentiality and integrity \\ \hline
 			Communication Data & All data that is used in traffic between card and terminal (password, nonces, etc.) & integrity \\ \hline
+			Users Identity & Value in the card, which allows communicating terminal to determine if card-holder is allowed to gain access to the system. & integrity \\ \hline
+			Protected content & All organizations possesions that are available to user after successful authentication & confidentiality \\ \hline 
+			
 \end{tabular}
 \end{table}
 \begin{itemize}
@@ -153,9 +156,6 @@ An adversary can obtain cryptographic keys used in protocol. Keys can leak from 
 \item \textbf{A.End-User} (Trustworthy End-User) \\
 The End-User of the system is assumed to be trustworthy and follow the Security Policy.
 
-\item \textbf{A.Terminal} (Secure terminal) \\
-The terminal is assumed to be resistant to backward-engineering and theft. Any attempt of the latter should result in invalidation of information stored inside it.
-
 \item \textbf{A.Card }(Low range communication card) \\
 Range of radio antenna built-in into card is assumed to be low (a few centimeters).
 
@@ -165,15 +165,13 @@ The system administrators are assumed to be trustworthy and follow the Security 
 \item \textbf{A.Passwords} (One-time passwords) \\ The passwords generated in protocol should be one-term only.
 \end{itemize}
 \subsection{Organizational Security Policies}
-
-
 \begin{itemize}
 	\item \textbf{P.ValidityCheck} \\ TOE shall verify the validity of a card and its state before opening door to secure location.
 \end{itemize}
 
 \section{Security Objectives}
 
-In this chapter we will provide security objectives, which will be met by the TOE.
+In this chapter we will provide security objectives, which should be met by the TOE. Security Objectives are determined on the basis of previous chapter.
 
 \subsection{Security Objectives for the TOE}
 \begin{itemize}
@@ -182,54 +180,95 @@ In this chapter we will provide security objectives, which will be met by the TO
 \item \textbf{OT.Transmission Uniqueness} \\ In the TOE every transmission between card and reader is unique.
 \end{itemize}
 
-
 \subsection{Security Objectives for the Operational Environment}
 \begin{itemize}
 
 \item \textbf{OE.End-User} (Trustworthy End-User) \\
 The End-User of the system shall be trustworthy and follow the Security Policy. Additionally, any problems with interfacing with the system (such as terminal denying access to secure location even though a valid card is used) should be immediately reported to the System Administrator.
 
-\item \textbf{OE.Terminal} (Secure terminal) \\
-The terminal shall be resistant to backward-engineering and theft. Any attempt of the latter shall result in terminal unconditionally blocking any further attempts of gaining access to secure location, so the incident is acknowledged by system administrators as soon as possible.
-
 \item \textbf{OE.Card} (Secure and unique card) \\
 The content of the card shall be inaccessible without cryptographic authorisation.\\
+Smartcard should be equiped in low power antenna.
 Each card will receive a counter or unique hash, which value will be generated after each authentication. The terminal shall distinguish two cards with same UID and different generated values.
 
 \item \textbf{OE.System-Administrators} (Trustworthy system administrators) \\
 The system administrators shall be bound by the legal contract to not publish technical details about the system and follow the Security Policy.
 
-\item \textbf{OE.Protocol} (Secure protocol) \\
-The protocol should be built using only well documented cryptographic elements that are proven to be safe.
-\end{itemize}
+\item \textbf{OE.Secure Access} \\
+The system, as well the enviroment surronding the TOE should allow access to protected content only after successful authorization.
 
-\subsection{Tabelka}
+\end{itemize}
+\subsection{Security Objective Rationale}
 
  \begin{table}[!ht]
  \centering
- \begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+ \begin{tabular}{|r|r|r|r|r|r|r|r|}
  \hline
 & \multicolumn{1}{c|}{\rotatebox{90}{OT.Card Uniqueness }}  & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Time  }} & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Uniqueness  }} 
-& \multicolumn{1}{c|}{\rotatebox{90}{OE.End-User  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.End-User  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.Terminal  }} &  \multicolumn{1}{c|}{\rotatebox{90}{OE.Card  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.System-Administrators  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.Protocol  }}\\
+& \multicolumn{1}{c|}{\rotatebox{90}{OE.End-User  }} &   \multicolumn{1}{c|}{\rotatebox{90}{OE.Card  }} & \multicolumn{1}{c|}{\rotatebox{90}{OE.System-Administrators  }}& \multicolumn{1}{c|}{\rotatebox{90}{OE.Secure Access  }}\\
  \hline
-T.Relay-Attack &&&&&&&&&\\ \hline
- T.Replay-Attack &&&&&&&&&\\ \hline
- T.Key-Leakage &&&&&&&&&\\ \hline
-  P.ValidityCheck &&&&&&&&&\\ \hline
- A.End-User & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&&&&\\ \hline
- A.Terminal & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&&&&\\ \hline
- A.Card & \cellcolor{gray} & \cellcolor{gray} &\cellcolor{gray}&&&&&&\\ \hline
- A.System-Administrators & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&&&&\\ \hline
- A.Passwords &\cellcolor{gray}&\cellcolor{gray} & \cellcolor{gray} &&&&&&\\
+T.Relay-Attack &&X&&&&&\\ \hline
+ T.Replay-Attack &&&X&&&&\\ \hline
+ T.Key-Leakage &X&&&&&&\\ \hline
+  P.ValidityCheck &&&&&&&X\\ \hline
+ A.End-User & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &X&&&\\ \hline
+ A.Card & \cellcolor{gray} & \cellcolor{gray} &\cellcolor{gray}&&X&&\\ \hline
+ A.System-Administrators & \cellcolor{gray} & \cellcolor{gray} & \cellcolor{gray} &&&X&\\ \hline
+ A.Passwords &\cellcolor{gray}&\cellcolor{gray} & \cellcolor{gray} &&X&&\\
 
  \hline
  \end{tabular}
  \end{table}
  
+The threat \textbf{T.Relay-Attack} is addressed directly by the \textbf{OT.Transmission Time} security objective. The relay attack require sending the authentication data on large distances, which would resolve in long time of response from the attackers card. The system should calculate the response time and if the safe time of response was exceeded it should halt the communication.
+\\ \\
+The threat \textbf{T.Replay-Attack}
+\\ \\
+The threat \textbf{T.Key-Leakage}
+\\ \\
+The requirements of \textbf{P.ValidityCheck}  are met by the \textbf{OE.Secure Access}. The safe enviroment which protects the valuable content behind the doors implies that the only way to access this content is to authenticate in the system.
+\\ \\
+The assumption \textbf{A.End-User} is directly addressed by \textbf{OE.End-User} which denotes that the user should be trustworthy and follow the applied Security Policy.
+\\ \\
+The assumption \textbf{A.System-Administrators} is directly addressed by \textbf{OE.System-Administrators}. The System Administrator is bound by the legal contract to not publish technical details about the system and follow the Security Policy, which meets the requirements of assumption.
+\\ \\
+The assumptions \textbf{A.Passwords} and \textbf{A.Card} are directly addressed by \textbf{OE.Card}. The card should possess a counter or unique hash which value will change on each authentication. This implies the assumption of one time passwords. Also the smartcard has to have a low range antenna which meets the assumption \textbf{A.Card}.
+
 \section{Security Requirements}
+
+The CC allows several operations to be performed on functional requirements; refinement,
+selection, assignment, and iteration are defined in paragraph C.4 of Part 1 [1] of the CC. Each of 600 these operations is used in this PP.
+
+
+The \textbf{refinement} operation is used to add detail to a requirement, and thus further restricts a requirement. Refinement of security requirements is denoted in bold text and the added/changed words are in \textbf{bold text}. In cases where words from a CC requirement were deleted, a separate attachment indicates the words that were removed.
+
+
+The \textbf{selection} operation is used to select one or more options provided by the CC in stating a requirement. Selections that have been made by the PP authors are denoted as underlined text and the original text of the component is given by a footnote. Selections to be filled in by the ST author appear in square brackets with an indication that a selection is to be made, [selection:], and are italicized.
+
+
+The \textbf{assignment} operation is used to assign a specific value to an unspecified parameter, such as the length of a password. Assignments that have been made by the PP authors are denoted by showing as underlined text and the original text of the component is given by a footnote. Assignments to be filled in by the ST author appear in square brackets with an indication that an assignment is to be made [assignment:], and are italicized. In some cases the assignment made by the PP authors defines a selection to be performed by the ST author. Thus this text is underlined and italicized like this.
+
+The \textbf{iteration} operation is used when a component is repeated with varying operations. Iteration is denoted by showing a slash "\//", and the iteration indicator after the component identifier.
+
+\subsection{Security Functional Requirements for the TOE}
+\subsection{Security Requirements Rationale}
+
+ \begin{table}[!ht]
+ \centering
+ \begin{tabular}{|r|r|r|r|}
+ \hline
+& \multicolumn{1}{c|}{\rotatebox{90}{OT.Card Uniqueness }}  & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Time  }} & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Uniqueness  }}\\
+ \hline
+Kloc 1 & & &\\ \hline
+Kloc 2  &&&\\ \hline
+Kloc 3  &&&\\ \hline
+itd....  &&&\\ 
+
+ \hline
+ \end{tabular}
+ \end{table}
+ 
 \section{Conformance Claims}
-
-
 
 
 \bibliographystyle{plain}
