@@ -175,7 +175,7 @@ In this chapter we will provide security objectives, which should be met by the 
 
 \subsection{Security Objectives for the TOE}
 \begin{itemize}
-\item \textbf{OT.Card Uniqueness} (Fraud Detection) \\ The TOE shall provide information to the System Administrators if card with trusted UID will not pass authentication.
+\item \textbf{OT.Card Uniqueness} (Fraud Detection) \\ The TOE shall provide information to the System Administrators if card without trusted UID will pass authentication.
 \item \textbf{OT.Transmission Time} \\The TOE is planned to calculate communication delays. Reader calculates cards response time.
 \item \textbf{OT.Transmission Uniqueness} \\ In the TOE every transmission between card and reader is unique.
 \end{itemize}
@@ -259,10 +259,13 @@ The \textbf{iteration} operation is used when a component is repeated with varyi
  \hline
 & \multicolumn{1}{c|}{\rotatebox{90}{OT.Card Uniqueness }}  & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Time  }} & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Uniqueness  }}\\
  \hline
-Kloc 1 & & &\\ \hline
-Kloc 2  &&&\\ \hline
-Kloc 3  &&&\\ \hline
-itd....  &&&\\ 
+FIA_UAU.2& x & &\\ \hline
+FCS_CKM.3  & x &&\\ \hline
+FTP_ITC  & x &&\\ \hline
+FIA_UAU.3 & & x &\\ \hline
+PT_RPL.1   &  & x &\\ \hline
+FMT_SAE.1  &  &   & x \\ \hline
+FPT_STM.1 &  && x\\ \hline
 
  \hline
  \end{tabular}
