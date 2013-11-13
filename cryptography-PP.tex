@@ -222,7 +222,7 @@ T.Relay-Attack &&X&&&&&\\ \hline
  
 The threat \textbf{T.Relay-Attack} is addressed directly by the \textbf{OT.Transmission Time} security objective. The relay attack require sending the authentication data on large distances, which would resolve in long time of response from the attackers card. The system should calculate the response time and if the safe time of response was exceeded it should halt the communication.
 \\ \\
-The threat \textbf{T.Replay-Attack}
+The threat \textbf{T.Replay-Attack} is addressed directly by the \textbf{OT.Transmission Uniqueness} security objective.The replay attack require sending the same message in effort to authenticate correctly. If the system will generate random unique values each time, the replied attacker message with resolve in different authentication result each time.
 \\ \\
 The threat \textbf{T.Key-Leakage} is addressed directly by the \textbf{OT.Card Uniqueness} security objective. Thanks to unique Card ID, when key is leaked it can be only applied to a Card with different ID. This can be easly detected.
 \\ \\
@@ -237,10 +237,9 @@ The assumptions \textbf{A.Passwords} and \textbf{A.Card} are directly addressed 
 \section{Security Requirements}
 
 The CC allows several operations to be performed on functional requirements; refinement,
-selection, assignment, and iteration are defined in paragraph C.4 of Part 1 [1] of the CC. Each of 600 these operations is used in this PP.
+selection, assignment, and iteration.
 
-
-The \textbf{refinement} operation is used to add detail to a requirement, and thus further restricts a requirement. Refinement of security requirements is denoted in bold text and the added/changed words are in \textbf{bold text}. In cases where words from a CC requirement were deleted, a separate attachment indicates the words that were removed.
+The \textbf{refinement} operation is used to add detail to a requirement, and thus further restricts a requirement. Refinement of security requirements is denoted in bold text and the added/changed words are in \textbf{bold text}.
 
 
 The \textbf{selection} operation is used to select one or more options provided by the CC in stating a requirement. Selections that have been made by the PP authors are denoted as underlined text and the original text of the component is given by a footnote. Selections to be filled in by the ST author appear in square brackets with an indication that a selection is to be made, [selection:], and are italicized.
@@ -251,6 +250,107 @@ The \textbf{assignment} operation is used to assign a specific value to an unspe
 The \textbf{iteration} operation is used when a component is repeated with varying operations. Iteration is denoted by showing a slash "\//", and the iteration indicator after the component identifier.
 
 \subsection{Security Functional Requirements for the TOE}
+
+
+\subsubsection{FMT\_SAE.1/Time-limited authorization}
+
+The TOE shall meet the requirement "Time-limited authorization (FMT\_SAE.1)" as specified below (Common Criteria Part 2).
+\begin{table}[!ht]
+	\begin{tabular}{ p{3cm}  p{10cm} }
+			Hierarchical to:& No other components. \\ 
+									&\\
+			Dependencies: & \sout{FMT\_SMR.1 Security Roles} \\
+									& FPT\_STM.1 Reliable time stamps \\
+									&\\
+			FMT\_SAE.1.1	&	The TSF shall restrict the capability to specify an expiration time for \underline{every
+information} \underline{exchanged between the card and the terminal to all of
+the users.}\\
+									&\\
+	        FMT\_SAE.1.2	&	For each of these security attributes, the TSF shall be able to\underline{ discard
+current communication session} after the expiration time for the indicated security attribute has passed.
+
+	 \end{tabular}
+ \end{table}
+\subsubsection{FPT\_STM.1/Reliable time stamps}
+
+The TOE shall meet the requirement "Reliable time stamps (FPT\_STM.1)" as specified below (Common Criteria Part 2).
+\begin{table}[!ht]
+	\begin{tabular}{ p{3cm}  p{10cm} }
+			Hierarchical to:& No other components. \\ 
+									&\\
+			Dependencies: & No dependencies.\\
+									&\\
+			FPT\_STM.1.1	&	The FST shall be able to provide reliable time stamps.\\
+
+	 \end{tabular}
+ \end{table}
+ 
+ \subsubsection{FIA\_UAU.3 Unforgeable authentication}
+
+\begin{table}[!ht]
+	\begin{tabular}{ p{3cm}  p{10cm} }
+			Hierarchical to:& No other components. \\ 
+									&\\
+			Dependencies: & No dependencies.\\
+									&\\
+			FIA\_UAU.3.1	& The TSF shall \sout{[selection: detect, prevent]} detect use of authentication data that
+       	has been forged by any user of the TSF..\\
+       	FIA\_UAU.3.2 & The TSF shall \sout{[selection: detect, prevent]} detect use of authentication data that
+       	has been copied from any other user of the TSF.\\
+
+	 \end{tabular}
+ \end{table}
+ 
+ \subsubsection{PT\_RPL.1 Replay detection}
+ 
+ \begin{table}[!ht]
+	\begin{tabular}{ p{3cm}  p{10cm} }
+			Hierarchical to:& No other components. \\ 
+									&\\
+			Dependencies: & No dependencies.\\
+									&\\
+		FPT\_RPL.1.1	& The TSF shall detect replay for the following entities: \sout{[assignment: list of
+       	identified entities]}. messages.\\
+       FPT\_RPL.1.2 & The TSF shall perform \sout{[assignment: list of specific actions]} card blocking when replay is detected..\\
+
+	 \end{tabular}
+ \end{table}
+ 
+ \subsubsection{FIA\_UAU.2 User authentication before any action}
+
+The TOE shall meet the requirement "User authentication before any action (FIA\_UAU.2)" as specified below (Common Criteria Part 2).
+
+ \begin{table}[!ht]
+	\begin{tabular}{ p{3cm}  p{10cm} }
+			Hierarchical to:& FIA\_UAU.1 Timing of authentication. \\ 
+									&\\
+			Dependencies: & FIA\_UID.1 Timing of identification.\\
+
+	 \end{tabular}
+ \end{table}
+ 
+  The TSF shall require each user to be successfully authenticated before
+allowing any other TSF-mediated actions on behalf of that user.
+
+ \subsubsection{FTP\_ITC Inter-TSF trusted channel}
+The TOE shall meet the requirement "Inter-TSF trusted channel (FTP\_ITC)"  as specified below (Common Criteria Part 2).
+ \begin{table}[!ht]
+	\begin{tabular}{ p{3cm}  p{10cm} }
+			Hierarchical to:& No other components. \\ 
+									&\\
+			Dependencies: & No dependencies.\\
+									&\\
+			FTP\_ITC.1.1 & The TSF shall provide a communication channel between itself and another trusted IT product \sout{that is logically distinct from other communication channels} and provides assured identification of its end points and protection of the channel data from modification or disclosure. \\
+			& \\
+						FTP\_ITC.1.2 & The TSF shall permit to initiate communication via the trusted channel. \\
+			& \\
+			\sout{FTP\_ITC.1.3} &	\sout{The TSF shall initiate communication via the trusted channel for [assignment: list of functions for which a trusted channel is required].}\\		
+	 \end{tabular}
+ \end{table}
+ 
+The threat T.Key leakage is addressed directly by the OT.Card Uniqueness security objec-
+tive. Thanks to unique Card ID, when key is leaked it can be only applied to a Card with different ID. This can be detected.
+
 \subsection{Security Requirements Rationale}
 
  \begin{table}[!ht]
@@ -260,20 +360,19 @@ The \textbf{iteration} operation is used when a component is repeated with varyi
 & \multicolumn{1}{c|}{\rotatebox{90}{OT.Card Uniqueness }}  & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Time  }} & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Uniqueness  }}\\
  \hline
 FIA\_UAU.2 & x & &\\ \hline
-FCS\_CKM.3  & x &&\\ \hline
 FTP\_ITC  & x &&\\ \hline
 FIA\_UAU.3 & &  & x \\ \hline
 PT\_RPL.1   &  &  & x \\ \hline
 FMT\_SAE.1  &  & x  &  \\ \hline
 FPT\_STM.1 &  & x & \\ \hline
 
- \hline
  \end{tabular}
  \end{table}
  
  
 \textbf{OT.Transmission-Uniqueness} requires \textbf{FIA\_UAU.3} "Unforgeable authentication" and \textbf{PT\_RPL.1} "Replay detection". The \textbf{FIA\_UAU.3} is responsible for detection of authenticaion data that has been copied or forged and has been marked by System Administrator as not-trusted. \textbf{PT\_RPL.1} is responsible for detection of replayed messages and if detected to block the card. 
- 
+\\ \\ 
+\textbf{OT.Card\_Uniqueness} require the TOE to detect an authentication using card with untrusted UID. The SFRs FIA\_UAU.2 and FTP\_ITC state, that card must be authenticated before any action using trusted channel allowing administrator to detect untrusted UID, thereby meeting this objective.
 \section{Conformance Claims}
 
 
