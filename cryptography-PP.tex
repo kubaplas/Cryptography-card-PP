@@ -223,7 +223,7 @@ The threat \textbf{T.Relay-Attack} is addressed directly by the \textbf{OT.Trans
 \\ \\
 The threat \textbf{T.Replay-Attack} is addressed directly by the \textbf{OT.Transmission Uniqueness} security objective.The replay attack require sending the same message in effort to authenticate correctly. If the system will generate random unique values each time, the replied attacker message with resolve in different authentication result each time.
 \\ \\
-The threat \textbf{T.Key-Leakage} is addressed directly by the \textbf{OT.Card Uniqueness} security objective. Thanks to unique Card ID, when key is leaked it can be only applied to a Card with different ID. This can be easly detected.
+The threat \textbf{T.Key-Leakage} is addressed directly by the \textbf{OT.Card Uniqueness} security objective. Thanks to unique Card ID, when key is leaked it can be easly applied only to a Card with different ID. Time stamp will allow to detect forged card with the same UID.
 \\ \\
 The requirements of \textbf{P.ValidityCheck}  are met by the \textbf{OE.Secure Access}. The safe enviroment which protects the valuable content behind the doors implies that the only way to access this content is to authenticate in the system.
 \\ \\
@@ -331,25 +331,6 @@ The TOE shall meet the requirement "User authentication before any action (FIA\_
   The TSF shall require each user to be successfully authenticated before
 allowing any other TSF-mediated actions on behalf of that user.
 
- \subsubsection{FTP\_ITC Inter-TSF trusted channel}
-The TOE shall meet the requirement "Inter-TSF trusted channel (FTP\_ITC)"  as specified below (Common Criteria Part 2).
- \begin{table}[!ht]
-	\begin{tabular}{ p{3cm}  p{10cm} }
-			Hierarchical to:& No other components. \\ 
-									&\\
-			Dependencies: & No dependencies.\\
-									&\\
-			FTP\_ITC.1.1 & The TSF shall provide a communication channel between itself and another trusted IT product \sout{that is logically distinct from other communication channels} and provides assured identification of its end points and protection of the channel data from modification or disclosure. \\
-			& \\
-						FTP\_ITC.1.2 & The TSF shall permit to initiate communication via the trusted channel. \\
-			& \\
-			\sout{FTP\_ITC.1.3} &	\sout{The TSF shall initiate communication via the trusted channel for [assignment: list of functions for which a trusted channel is required].}\\		
-	 \end{tabular}
- \end{table}
- 
-The threat T.Key leakage is addressed directly by the OT.Card Uniqueness security objec-
-tive. Thanks to unique Card ID, when key is leaked it can be only applied to a Card with different ID. This can be detected.
-
 \subsection{Security Requirements Rationale}
 
  \begin{table}[!ht]
@@ -359,16 +340,15 @@ tive. Thanks to unique Card ID, when key is leaked it can be only applied to a C
 & \multicolumn{1}{c|}{\rotatebox{90}{OT.Card Uniqueness }}  & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Time  }} & \multicolumn{1}{c|}{\rotatebox{90}{OT.Transmission Uniqueness  }}\\
  \hline
 FIA\_UAU.2 & x & &\\ \hline
-FTP\_ITC  & x &&\\ \hline
 FIA\_UAU.3 & &  & x \\ \hline
 PT\_RPL.1   &  &  & x \\ \hline
 FMT\_SAE.1  &  & x  &  \\ \hline
-FPT\_STM.1 &  & x & \\ \hline
+FPT\_STM.1 & x & x & \\ \hline
 
  \end{tabular}
  \end{table}
  
-\textbf{OT.Card\_Uniqueness} require the TOE to detect an authentication using card with untrusted UID. The SFRs FIA\_UAU.2 and FTP\_ITC state, that card must be authenticated before any action using trusted channel allowing administrator to detect untrusted UID, thereby meeting this objective.
+\textbf{OT.Card\_Uniqueness} require the TOE to detect an authentication using forged card. The SFRs \textbf{FIA\_UAU.2} that card must be authenticated before any action, \textbf{FPT\_STM.1} provides a reliable time stamp, to be saved on card and terminal, allowing administrator to detect forged card, thereby meeting this objective.
 \\ \\
 \textbf{OT.Transimission Time} requires \textbf{FMT\_SAE.1} ,,Time-limited authorization'' and \textbf{FPT\_STM.1} ,,Reliable time stamps''. \textbf{FMT\_SAE.1} provides means to limit acceptable card response time, thus preventing relay attacks. \textbf{FPT\_STM.1} provides reliable time stamps for \textbf{FMT\_SAE.1}.
 \\ \\
