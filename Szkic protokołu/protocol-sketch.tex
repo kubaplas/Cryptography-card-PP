@@ -1,0 +1,104 @@
+\documentclass[10pt,titlepage]{article}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage[figuresright]{rotating}
+\usepackage[cp1250]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{pslatex}
+\usepackage{ulem}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{color}
+\usepackage[left=3cm,top=3cm,right=3cm]{geometry} 
+\usepackage{bchart}
+\usepackage{datapie}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{hyperref}
+ \usepackage{array,multirow}
+ \usepackage{xcolor,colortbl}
+
+\definecolor{light-gray}{gray}{0.95}
+
+\setlength{\textwidth}{400pt}
+\lstset{numbers=left,
+			numberstyle=\tiny, 
+			basicstyle=\scriptsize\ttfamily, 
+			breaklines=true, 
+			captionpos=b, 
+			tabsize=2}
+
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\TAB}{\hspace{0.50cm}}
+\newcommand{\IFF}{\leftrightarrow}
+\newcommand{\IMP}{\rightarrow}
+\newcommand{\slice}[4]{
+  \pgfmathparse{0.5*#1+0.5*#2}
+  \let\midangle\pgfmathresult
+
+  % slice
+  \draw[thick,fill=black!10] (0,0) -- (#1:1) arc (#1:#2:1) -- cycle;
+
+  % outer label
+  \node[label=\midangle:#4] at (\midangle:1) {};
+
+  % inner label
+  \pgfmathparse{min((#2-#1-10)/110*(-0.3),0)}
+  \let\temp\pgfmathresult
+  \pgfmathparse{max(\temp,-0.5) + 0.8}
+  \let\innerpos\pgfmathresult
+  \node at (\midangle:\innerpos) {#3};
+}
+\makeindex
+
+
+
+
+
+
+\begin{document}
+
+\section*{Simple but longterm card-terminal authorization protocol based on one time passwords - sketch of protocol}
+
+ \begin{table}[!ht]
+ \centering
+	\begin{tabular}{| p{4.55cm} |  p{4.55cm} | p{4.55cm}| }
+ \hline
+ Card & Transmission  & Terminal \\\hline
+ & & Sends Hello Messsage and asks card for authentication.\\
+ & $1. \leftarrow Hello Message$ & \\
+ Generates the challenge nonce (NC). &  &  \\ 
+ &   $2. NC \rightarrow $&  \\ 
+ &  & Prepare the challenge nonce (NR). \newline Respond on NC nonce with AR value.\newline Cipher both nonce and value with KeyStream. \\ 
+ & $3. \leftarrow KeyStream1 \oplus NR + KeyStream2 \oplus AR $&\\
+ Deciphers the response, verifies the challenge AR and responds with AC value.\newline Also sends current State of card.\newline Everything is ciphered with usage of the same KeyStream. & & \\
+ & $4. AC \oplus KeyStream3\: ,\: State \oplus KeyStream4 \rightarrow $& \\
+ & & Verify the AC challange. \newline Verify the state. \newline Send new state.\\
+ &$5. \leftarrow NewState \oplus KeyStream5$ &\\
+ Save the new state. & &\\
+ \hline
+
+ \end{tabular}
+ \end{table}
+ 
+ To detect the attemp of relay attack the terminal is gathering the informations about the delays between each card response (in miliseconds).
+ If the sum of delays is higher than given safe value, the card is revoked on the end of authentication procedure.
+ 
+
+
+\end{document}
