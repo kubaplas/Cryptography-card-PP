@@ -56,7 +56,6 @@ If the protocol is executed successfully, terminal opens the door to the secure 
 
 
 ++++++++++++++++++++++++++ ASN.1
-16, 64, 64, 256
 
 CardProtocol DEFINITIONS ::= BEGIN
 
@@ -68,9 +67,12 @@ CardProtocol DEFINITIONS ::= BEGIN
         random       BIT STRING
     }
     
-    RandomChallenge ::= SEQUENCE {
-        random       BIT STRING
+    StageOne ::= SEQUENCE {
+        message       BIT STRING
     }
     
-
+    StageTwo ::= SEQUENCE {
+        message       BIT STRING
+    }
+    
 END
