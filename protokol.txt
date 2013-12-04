@@ -53,3 +53,24 @@ Authentication protocol:
 5.                                              ST := Dec_{ST}(m_2)
 
 If the protocol is executed successfully, terminal opens the door to the secure location.
+
+
+++++++++++++++++++++++++++ ASN.1
+16, 64, 64, 256
+
+CardProtocol DEFINITIONS ::= BEGIN
+
+    CardHello ::= SEQUENCE {
+        cardId       BIT STRING
+    }
+
+    RandomChallenge ::= SEQUENCE {
+        random       BIT STRING
+    }
+    
+    RandomChallenge ::= SEQUENCE {
+        random       BIT STRING
+    }
+    
+
+END
