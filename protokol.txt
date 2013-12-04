@@ -1,0 +1,45 @@
+To co jest niżej to taka trochę zmodyfikowana autentykacja WEP (dodatkowo ze zmieniającymi się kluczami).
+
+Prerequisites:
+* Each card has a unique id and stores its current state (ST), which is simultaneously a symmetric key used for secure communication with the terminal.
+* Terminal stores a mapping from card ids to their current states. We assume that for a given card, the initial state of the card and the corresponding state terminal holds are the same.
+
+Id  - card ids space
+R   - challenges space ({0,1}^64)
+K   - key space ({0,1}^256)
+Enc - encryption (AES)
+Dec - decryption (AES)
+f : Id -> K - mapping from card ids to their current states
+
+Authentication protocol:
+
+   Terminal (has f)                              Card (has ST)
+
+1.                           id_card
+                     <----------------------
+
+2. Take r \in R
+   uniformly at
+   random.
+                                r
+                     ---------------------->
+
+3.                                              m_1 := Enc_{ST}(r)
+                               m_1
+                     <----------------------
+
+4. Let k := f(id_card)
+  and check if Dec_k(m_1)
+  equals r (if not, abort).
+
+  Take k' \in K\{k} uniformly
+  at random and update f so
+  that f(id_card) = k'.
+
+  m_2 := Enc_k(k')
+                               m_2
+                     ---------------------->
+
+5.                                              ST := Dec_{ST}(m_2)
+
+If the protocol is executed successfully, terminal opens the door to the secure location.
