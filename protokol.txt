@@ -4,7 +4,7 @@ Prerequisites:
 * Each card has a unique id and stores its current state (ST), which is simultaneously a symmetric key used for secure communication with the terminal.
 * Terminal stores a mapping from card ids to their current states. We assume that for a given card, the initial state of the card and the corresponding state terminal holds are the same.
 
-Id  - card ids space
+Id  - card ids space ({0,1}^32)
 R   - challenges space ({0,1}^64)
 K   - key space ({0,1}^256)
 Enc - encryption (AES)
@@ -14,7 +14,7 @@ ACRT - acceptable card response time (exact value to be defined)
 time - function that returns current timestamp
 f : Id -> K - mapping from card ids to their current states
 
-Authentication protocol:
+Authentication protocol (simple pre-shared key challenge-response authentication):
 
    Terminal (has f)                              Card (has ST)
 
