@@ -64,15 +64,15 @@ CardProtocol DEFINITIONS ::= BEGIN
     }
 
     RandomChallenge ::= SEQUENCE {
-        random       BIT STRING
+        challenge    BIT STRING
     }
-    
+
     StageOne ::= SEQUENCE {
-        message       BIT STRING
+        oldState     BIT STRING
     }
-    
+
     StageTwo ::= SEQUENCE {
-        message       BIT STRING
+        newState     BIT STRING
     }
-    
+
 END
