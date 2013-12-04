@@ -9,6 +9,9 @@ R   - challenges space ({0,1}^64)
 K   - key space ({0,1}^256)
 Enc - encryption (AES)
 Dec - decryption (AES)
+
+ACRT - acceptable card response time (exact value to be defined)
+time - function that returns current timestamp
 f : Id -> K - mapping from card ids to their current states
 
 Authentication protocol:
@@ -21,6 +24,8 @@ Authentication protocol:
 2. Take r \in R
    uniformly at
    random.
+
+   Let t := time().
                                 r
                      ---------------------->
 
@@ -28,15 +33,20 @@ Authentication protocol:
                                m_1
                      <----------------------
 
-4. Let k := f(id_card)
-  and check if Dec_k(m_1)
-  equals r (if not, abort).
+4. Let t' := time().
 
-  Take k' \in K\{k} uniformly
-  at random and update f so
-  that f(id_card) = k'.
+   Check if t' - t < ACRT
+   (if not, abort).
 
-  m_2 := Enc_k(k')
+   Let k := f(id_card)
+   and check if Dec_k(m_1)
+   equals r (if not, abort).
+
+   Take k' \in K\{k} uniformly
+   at random and update f so
+   that f(id_card) = k'.
+
+   m_2 := Enc_k(k')
                                m_2
                      ---------------------->
 
