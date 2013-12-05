@@ -75,30 +75,79 @@
 
 \section*{Simple but longterm card-terminal authorization protocol based on one time passwords - sketch of protocol}
 
+\subsubsection*{Prerequisites}
+
+\begin{itemize}
+	\item  Each card has a unique id and stores its current state (ST), which is simultaneously a symmetric key used for secure communication with the terminal.
+	\item Terminal stores a mapping from card ids to their current states. We assume that for a given card, the initial
+\end{itemize}
+
+\subsubsection*{Definitions}
+
+\begin{itemize}
+	\item $Card_{ID}$  - card IDs space $\{0,1\}^{32}$
+	\item R   - challenges space $\{0,1\}^{64}$
+	\item K   - key space $\{0,1\}^{256}$ 
+	\item Enc - encryption (AES)
+	\item Dec - decryption (AES)
+	\item ACRT - acceptable card response time (exact value to be defined)
+	\item $time()$ - function that returns current timestamp
+	\item f : $Card_{ID}  \rightarrow $ K - mapping from card ids to their current states
+\end{itemize}
+
+Authentication protocol (simple pre-shared key challenge-response authentication):
  \begin{table}[!ht]
  \centering
-	\begin{tabular}{| p{4.55cm} |  p{4.55cm} | p{4.55cm}| }
+	\begin{tabular}{| p{6.55cm}   p{2.55cm}  p{4.55cm}| }
  \hline
- Card & Transmission  & Terminal \\\hline
- & & Sends Hello Messsage and asks card for authentication.\\
- & $1. \leftarrow Hello Message$ & \\
- Generates the challenge nonce (NC). &  &  \\ 
- &   $2. NC \rightarrow $&  \\ 
- &  & Prepare the challenge nonce (NR). \newline Respond on NC nonce with AR value.\newline Cipher both nonce and value with KeyStream. \\ 
- & $3. \leftarrow KeyStream1 \oplus NR + KeyStream2 \oplus AR $&\\
- Deciphers the response, verifies the challenge AR and responds with AC value.\newline Also sends current State of card.\newline Everything is ciphered with usage of the same KeyStream. & & \\
- & $4. AC \oplus KeyStream3\: ,\: State \oplus KeyStream4 \rightarrow $& \\
- & & Verify the AC challange. \newline Verify the state. \newline Send new state.\\
- &$5. \leftarrow NewState \oplus KeyStream5$ &\\
- Save the new state. & &\\
+ Terminal & Transmission  & Card \\\hline
+ 1. Has f & & Has ST\\
+ &  $\leftarrow Card_{ID}$  & \\
+ 2. Take $ r \in R $ uniformly at random. &&\\ 
+Let $t := time()$ &  &  \\ 
+ & $\rightarrow R$ &  \\ 
+ 3.& &$m_1 := Enc_{ST} (r)$ \\
+ &  $\leftarrow m_1$  & \\
+4. Let $t' := time()$. &&\\
+Check if $t' - t < ACRT$ (If not, abort.) &&\\
+&&\\
+Let $k := f(Card_{ID})$ and check &&\\ 
+if $Dec_K(m_1) = r$ (If not, abort.)&&\\
+&&\\
+Take $k' \in K \backslash \{k\} $ uniformly at random &&\\
+and update $f$ so that $f(Card_{ID}) = k'$.&&\\
+&&\\
+$m_2 := Enc_{k}(k')$& & \\
+ & $\rightarrow m_2$ &  \\ 
+5. & & $ ST := Dec_{ST} (m_2)$ \\
  \hline
 
  \end{tabular}
  \end{table}
  
- To detect the attemp of relay attack the terminal is gathering the informations about the delays between each card response (in miliseconds).
- If the sum of delays is higher than given safe value, the card is revoked on the end of authentication procedure.
+If the protocol is executed successfully, terminal opens the door to the secure location.
  
 
+\section*{ASN.1 Documentation}
+
+CardProtocol DEFINITIONS ::= BEGIN
+
+    CardHello ::= SEQUENCE \{\\
+        cardId       BIT STRING\\
+   \}\\
+
+    RandomChallenge ::= SEQUENCE {
+        challenge    BIT STRING
+    }
+
+    StageOne ::= SEQUENCE {
+        oldState     BIT STRING
+    }
+
+    StageTwo ::= SEQUENCE {
+        newState     BIT STRING
+    }
+
+END
 
 \end{document}
