@@ -78,21 +78,21 @@
 \subsubsection*{Prerequisites}
 
 \begin{itemize}
-	\item  Each card has a unique id and stores its current state (ST), which is simultaneously a symmetric key used for secure communication with the terminal.
-	\item Terminal stores a mapping from card ids to their current states. We assume that for a given card, the initial
+	\item  Each card has a unique ID ($Card_{ID}$) and stores its current state ($ST$), which is simultaneously a symmetric key used for secure communication with the terminal.
+	\item Terminal stores a mapping from card IDs to their current states. We assume that for a given card, the initial state of the card and the corresponding state terminal holds are the same.
 \end{itemize}
 
 \subsubsection*{Definitions}
 
 \begin{itemize}
-	\item $Card_{ID}$  - card IDs space $\{0,1\}^{32}$
-	\item R   - challenges space $\{0,1\}^{64}$
-	\item K   - key space $\{0,1\}^{256}$ 
+	\item $\mathcal{ID}$  - card IDs space $\{0,1\}^{32}$
+	\item $\mathcal{R}$   - challenges space $\{0,1\}^{64}$
+	\item $\mathcal{K}$   - key space $\{0,1\}^{256}$
 	\item Enc - encryption (AES)
 	\item Dec - decryption (AES)
 	\item ACRT - acceptable card response time (exact value to be defined)
 	\item $time()$ - function that returns current timestamp
-	\item f : $Card_{ID}  \rightarrow $ K - mapping from card ids to their current states
+	\item $f : \mathcal{ID} \rightarrow \mathcal{K}$ - mapping from card IDs to their current states
 \end{itemize}
 
 Authentication protocol (simple pre-shared key challenge-response authentication):
@@ -100,21 +100,21 @@ Authentication protocol (simple pre-shared key challenge-response authentication
  \centering
 	\begin{tabular}{| p{6.55cm}   p{2.55cm}  p{4.55cm}| }
  \hline
- Terminal & Transmission  & Card \\\hline
- 1. Has f & & Has ST\\
+ Terminal ($f$) & Transmission  & Card ($Card_{ID}$, $ST$) \\\hline
+ 1.  & & \\
  &  $\leftarrow Card_{ID}$  & \\
- 2. Take $ r \in R $ uniformly at random. &&\\ 
+ 2. Take $ r \in \mathcal{R} $ uniformly at random. &&\\
 Let $t := time()$ &  &  \\ 
- & $\rightarrow R$ &  \\ 
+ & $\rightarrow r$ &  \\
  3.& &$m_1 := Enc_{ST} (r)$ \\
  &  $\leftarrow m_1$  & \\
 4. Let $t' := time()$. &&\\
 Check if $t' - t < ACRT$ (If not, abort.) &&\\
 &&\\
 Let $k := f(Card_{ID})$ and check &&\\ 
-if $Dec_K(m_1) = r$ (If not, abort.)&&\\
+if $Dec_k(m_1) = r$ (If not, abort.)&&\\
 &&\\
-Take $k' \in K \backslash \{k\} $ uniformly at random &&\\
+Take $k' \in \mathcal{K} \backslash \{k\} $ uniformly at random &&\\
 and update $f$ so that $f(Card_{ID}) = k'$.&&\\
 &&\\
 $m_2 := Enc_{k}(k')$& & \\
