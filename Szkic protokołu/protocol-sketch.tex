@@ -79,24 +79,26 @@
 
 \begin{itemize}
 	\item  Each card has a unique ID ($Card_{ID}$) and stores its current state ($ST$), which is simultaneously a symmetric key used for secure communication with the terminal.
-	\item Terminal stores a mapping from card IDs to pair of their current and previous state. We assume that for a given card, the initial state of the card and the corresponding current state that terminal holds are the same (initial previous state stored by the terminal is taken at random).
+	\item Terminal stores a mapping from card IDs to pair of their current and previous state. We assume that for a given card the initial state of the card and the corresponding current state that terminal holds are the same (initial previous state of the card stored by the terminal is taken at random).
 \end{itemize}
 
 \subsubsection*{Definitions}
 
 \begin{itemize}
-	\item $\mathcal{ID}$  - card IDs space ($\{0,1\}^{32}$)
+	\item $\mathcal{ID}$  - card IDs space ($\{0,1\}^{16}$)
 	\item $\mathcal{R}$   - challenges space ($\{0,1\}^{64}$)
 	\item $\mathcal{K}$   - key space ($\{0,1\}^{128} \times \{0,1\}^{256}$)
 	\item Enc - encryption (AES in CFB mode with 256b key)
 	\item Dec - decryption (AES in CFB mode with 256b key)
 	\item ACRT - acceptable card response time (exact value to be defined)
-	\item $time()$ - function that returns current timestamp
+	\item $time()$ - function that returns current time
 	\item $f : \mathcal{ID} \rightarrow \mathcal{K} \times \mathcal{K}$ - mapping from card IDs to pair of states (previous and the current one).
 \end{itemize}
 
+\newpage
+
 Authentication protocol (simple pre-shared key challenge-response authentication):
- \begin{table}[!ht]
+ \begin{table}[!htdp]
  \centering
 	\begin{tabular}{| p{6.55cm}   p{2.55cm}  p{4.55cm}| }
  \hline
@@ -127,28 +129,34 @@ $m_2 := Enc_{k_{good}}(k')$& & \\
  \end{table}
  
 If the protocol is executed successfully, terminal opens the door to the secure location.
- 
+
+\newpage
 
 \section*{ASN.1 Documentation}
 
-CardProtocol DEFINITIONS ::= BEGIN
+CardProtocol DEFINITIONS ::= BEGIN \\
 
-    CardHello ::= SEQUENCE \{\\
-        cardId       BIT STRING\\
-   \}\\
+\noindent
+CardHello ::= SEQUENCE \{\\
+\indent cardId       BIT STRING\\
+\}\\
 
-    RandomChallenge ::= SEQUENCE {
-        challenge    BIT STRING
-    }
+\noindent
+RandomChallenge ::= SEQUENCE \{\\
+\indent challenge    BIT STRING\\
+\}\\
 
-    StageOne ::= SEQUENCE {
-        oldState     BIT STRING
-    }
+\noindent
+StageOne ::= SEQUENCE \{\\
+\indent oldState     BIT STRING\\
+\}\\
 
-    StageTwo ::= SEQUENCE {
-        newState     BIT STRING
-    }
+\noindent
+StageTwo ::= SEQUENCE \{\\
+\indent newState     BIT STRING\\
+\}\\
 
+\noindent
 END
 
 \end{document}
