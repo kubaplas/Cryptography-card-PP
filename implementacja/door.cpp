@@ -1,3 +1,7 @@
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/lexical_cast.hpp>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -6,6 +10,7 @@
 #include <limits>
 #include <stdexcept>
 #include <stdint.h>
+#include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <cryptopp/aes.h>
@@ -15,12 +20,15 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 
+typedef uint8_t ID;
+
+using boost::lexical_cast;
 using std::cerr;
 using std::cout;
 
 namespace CPP = CryptoPP;
 
-const long ACCEPTABLE_CARD_RESPONSE_TIME_US = 100000;
+const long ACCEPTABLE_CARD_RESPONSE_TIME_US = 50000;
 const size_t AES_KEY_LENGTH = 32;
 
 namespace {
@@ -74,6 +82,13 @@ CPP::SecByteBlock hexToBb(const std::string &s)
     sscanf(&s[i*2], "%02x", &x);
     result[i] = x;
   }
+  return result;
+}
+
+std::vector<std::string> split(const std::string &s)
+{
+  std::vector<std::string> result;
+  boost::split(result, s, boost::is_space());
   return result;
 }
 
@@ -158,7 +173,7 @@ CPP::SecByteBlock decrypt(const State &st, const CPP::SecByteBlock &msg)
 
 struct Card
 {
-  Card(uint16_t id, CPP::RandomNumberGenerator &rng)
+  Card(ID id, CPP::RandomNumberGenerator &rng)
   : m_id(id), m_state(rng) { }
 
   Card(const char *file)
@@ -169,13 +184,15 @@ struct Card
     f >> *this;
   }
 
-  uint16_t id() const { return m_id; }
+  ID id() const { return m_id; }
   const State &state() const { return m_state; }
+
+  void setResponseTime(useconds_t response_time) { m_response_time = response_time; }
 
   CPP::SecByteBlock challengeResponse(const CPP::SecByteBlock &challenge, bool delay) const
   {
     if (delay)
-      usleep(rand()%(ACCEPTABLE_CARD_RESPONSE_TIME_US*2));
+      usleep(m_response_time);
     return encrypt(m_state, challenge);
   }
 
@@ -189,8 +206,9 @@ struct Card
   friend std::istream &operator>>(std::istream &is, Card &c);
 
 private:
-  uint16_t m_id;
+  ID m_id;
   State m_state;
+  useconds_t m_response_time;
 };
 
 std::ostream &operator<<(std::ostream &os, const Card &c)
@@ -218,10 +236,10 @@ struct Terminal
     f >> *this;
   }
 
-  bool authenticate(CPP::RandomNumberGenerator &rng, Card &card)
+  bool authenticate(CPP::RandomNumberGenerator &rng, Card &card, bool delay, bool interrupt)
   {
     // <- id
-    uint16_t id = card.id();
+    ID id = card.id();
 
     // -> r
     CPP::SecByteBlock r(8);
@@ -229,7 +247,7 @@ struct Terminal
     timeval t = timeOfDay();
 
     // <- m_1
-    CPP::SecByteBlock m_1 = card.challengeResponse(r, false);
+    CPP::SecByteBlock m_1 = card.challengeResponse(r, delay);
     timeval t_prim = timeOfDay();
     if ((t_prim.tv_sec > t.tv_sec)
     ||  (t_prim.tv_usec - t.tv_usec) > ACCEPTABLE_CARD_RESPONSE_TIME_US)
@@ -264,8 +282,9 @@ struct Terminal
       CPP::SecByteBlock serialized_new_st;
       serialized_new_st += new_st.iv();
       serialized_new_st += new_st.key();
-      card.updateState(encrypt(good_st, serialized_new_st));
 
+      if (!interrupt)
+        card.updateState(encrypt(good_st, serialized_new_st));
       return true;
     }
     else
@@ -285,8 +304,8 @@ private:
 
 std::istream &operator>>(std::istream &is, Terminal &t)
 {
-  t.m_states.resize(std::numeric_limits<uint16_t>::max() + 1);
-  for (uint32_t i = 0; i <= std::numeric_limits<uint16_t>::max(); ++i)
+  t.m_states.resize(std::numeric_limits<ID>::max() + 1);
+  for (uint32_t i = 0; i <= std::numeric_limits<ID>::max(); ++i)
   {
     is >> t.m_states[i].first;
     is >> t.m_states[i].second;
@@ -313,6 +332,47 @@ void serialize(const Card &c, const char *file)
     throw std::runtime_error(writeError(file));
   f << c;
   f.close();
+}
+
+/***********************************************/
+
+void processCommand(Terminal &terminal, CPP::RandomNumberGenerator &rng,
+                    const std::string &command)
+{
+  static bool delay = false;
+  static bool interrupt = false;
+  static useconds_t card_response_time = 0;
+
+  if (command.compare(0, 4, "auth") == 0)
+  {
+    std::string path = boost::trim_copy(command.substr(4));
+    Card card(path.c_str());
+    card.setResponseTime(card_response_time);
+    if (terminal.authenticate(rng, card, delay, interrupt))
+    {
+      cout << "Success, opening door...\n";
+      serialize(card, path.c_str());
+    }
+  }
+  else if (command.compare(0, 3, "set") == 0)
+  {
+    const std::vector<std::string> tokens = split(boost::trim_copy(command.substr(3)));
+    if (tokens.size() != 2)
+      cerr << "set: wrong number of arguments (2 expected, " << tokens.size() << " given)\n";
+    else
+    {
+      if (tokens[0] == "delay")
+        delay = lexical_cast<typeof(delay)>(tokens[1]);
+      else if (tokens[0] == "interrupt")
+        interrupt = lexical_cast<typeof(interrupt)>(tokens[1]);
+      else if (tokens[0] == "card_response_time")
+        card_response_time = lexical_cast<typeof(card_response_time)>(tokens[1]);
+      else
+        cerr << "set: wrong variable: " << tokens[1] << "\n";
+    }
+  }
+  else
+    cerr << "Wrong command: " << command << "\n";
 }
 
 /***********************************************/
@@ -346,7 +406,8 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    for (uint32_t i = 0; i <= std::numeric_limits<uint16_t>::max(); ++i)
+    mkdir(cards_directory.c_str(), 0755);
+    for (uint32_t i = 0; i <= std::numeric_limits<ID>::max(); ++i)
     {
       Card c(i, rng);
       terminal << State(rng) << " " << c.state() << "\n";
@@ -367,7 +428,7 @@ int main(int argc, char **argv)
   {
     if (argc < 3)
     {
-      cerr << "Usage: " << argv[0] << " auth <terminal_state_file>\n";
+      cerr << "Usage: " << argv[0] << " auth <terminal_state_file> [commands..]\n";
       return 1;
     }
 
@@ -375,33 +436,38 @@ int main(int argc, char **argv)
     Terminal terminal(argv[2]);
     cout << "Done.\n";
 
-    while (true)
+    if (argc == 3)
     {
-      char *input = readline("> ");
-      if (input == NULL)
+      while (true)
       {
-        cout << "\n";
-        break;
-      }
-      else
-      {
-        try
+        char *input = readline("> ");
+        if (input == NULL)
         {
-          Card card(input);
-
-          if (terminal.authenticate(rng, card))
+          cout << "\n";
+          break;
+        }
+        else
+        {
+          try
           {
-            cout << "Success, opening door...\n";
-            serialize(card, input);
+            processCommand(terminal, rng, input);
+          }
+          catch (std::exception &e)
+          {
+            cerr << "Error: " << e.what() << "\n";
           }
         }
-        catch (std::exception &e)
-        {
-          cerr << "Error: " << e.what() << "\n";
-        }
+        add_history(input);
+        free(input);
       }
-      add_history(input);
-      free(input);
+    }
+    else
+    {
+      for (int i = 3; i < argc; ++i)
+      {
+        cout << "Executing \"" << argv[i] << "\"...\n";
+        processCommand(terminal, rng, argv[i]);
+      }
     }
 
     cout << "Serializing terminal state... " << std::flush;
